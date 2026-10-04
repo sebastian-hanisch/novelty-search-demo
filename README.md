@@ -1,5 +1,7 @@
 # Novelty Search – suchen, ohne das Ziel zu kennen (Streamlit-Demo)
 
+**[→ Demo live ausprobieren](https://sebastianhanisch-novelty-search-demo.streamlit.app/)**
+
 ---
 
 Interaktive Demo zu **Novelty Search**. **Zweites Stück der Konzepte-Linie „Novelty Search und Quality-Diversity“** im Portfolio von
