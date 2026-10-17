@@ -1,6 +1,7 @@
 """Plotly-Abbildungen der Novelty-Search-Demo: Lauf im Labyrinth (Endpositionen, besuchte Zellen, Archiv), Verlauf des Abstands und der besuchten Zellen, Erfolgsquoten je Variante, Budgetkurven,
 Einstellungs-Raster, verlängerter Lauf. Achsen sind gesperrt (fixedrange), damit Touch-Geräte beim Scrollen nicht zoomen. Das Raster `grid[i, j]` wird mit i als x-Achse gezeichnet."""
 
+import math
 import numpy as np
 import plotly.graph_objects as go
 
@@ -11,6 +12,23 @@ VISITED_COLOR = "#d6e4f5"
 START_COLOR, GOAL_COLOR, ROBOT_COLOR, PATH_COLOR, ARCHIVE_COLOR, TRAP_COLOR = "#54a24b", "#e45756", "#4c78a8", "#f58518", "#b279a2", "#b279a2"
 VARIANT_COLORS = {"fitness": "#e45756", "novelty": "#4c78a8", "archive_top": "#54a24b", "archive_threshold": "#b279a2"}
 LEVEL_COLORS = {0: "#54a24b", 1: "#72b7b2", 2: "#4c78a8", 3: "#f58518", 4: "#e45756"}
+
+
+def _ref_line(fig, value, text, position, axis, log=True, **line_kwargs):
+    """Referenzlinie mit Beschriftung auf einer logarithmischen Achse: die Linie liegt auf dem Datenwert, die Beschriftung braucht log10 des Werts
+    (add_hline und add_vline setzen beide auf denselben Wert, die Beschriftung sitzt dann falsch und dehnt die Achse); log=False für lineare Achsen."""
+    if log and not value > 0.0:
+        return
+    pos = math.log10(value) if log else value
+    top, left = "top" in position, "left" in position
+    if axis == "y":
+        fig.add_hline(y=value, **line_kwargs)
+        if text:
+            fig.add_annotation(xref="paper", yref="y", x=0 if left else 1, y=pos, text=text, showarrow=False, xanchor="left" if left else "right", yanchor="bottom" if top else "top")
+    else:
+        fig.add_vline(x=value, **line_kwargs)
+        if text:
+            fig.add_annotation(xref="x", yref="paper", x=pos, y=1 if top else 0, text=text, showarrow=False, xanchor="right" if left else "left", yanchor="top" if top else "bottom")
 
 
 def lock_axes(fig):
@@ -129,7 +147,7 @@ def build_long_chart(pre):
     for v in C.LONG_VARIANTS:
         curve = pre["long"]["variants"][v]["mean_progress"]
         fig.add_trace(go.Scatter(x=[(i + 1) * C.LONG_STEP * C.POP for i in range(len(curve))], y=curve, mode="lines", line=dict(color=VARIANT_COLORS[v], width=2.5), name=C.VARIANT_LABELS[v]))
-    fig.add_vline(x=pre["budget"], line=dict(color="#888", dash="dot"), annotation_text="Budget der Studie")
+    _ref_line(fig, pre["budget"], "Budget der Studie", "top right", "x", line=dict(color="#888", dash="dot"))
     fig.update_xaxes(title_text="Evaluationen", type="log")
     fig.update_yaxes(title_text="kleinster wahrer Restweg bis zum Ziel (Zellen)", rangemode="tozero")
     return _base(fig, 340, legend_y=-0.35)
