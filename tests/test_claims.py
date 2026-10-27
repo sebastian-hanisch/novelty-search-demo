@@ -80,7 +80,7 @@ def test_the_two_archive_rules_start_identically():
 
 
 def test_novelty_visits_every_free_cell_in_every_run_on_levels_zero_to_three():
-    """README: auf Stufe 0 bis 3 besuchen alle 60 Novelty-Läufe (je Variante) alle freien Zellen (484 / 465 / 465 / 465); die Fitness im Mittel 327.15 / 376.95 / 422.45 / 343.9, im schlechtesten Lauf auf Stufe 3 nur 191."""
+    """README: auf Stufe 0 bis 3 besuchen alle 60 Novelty-Läufe (drei Varianten à 20 Läufe) alle freien Zellen (484 / 465 / 465 / 465); die Fitness im Mittel 327.15 / 376.95 / 422.45 / 343.9, im schlechtesten Lauf auf Stufe 3 nur 191."""
     for lv in (0, 1, 2, 3):
         free = E.level_info(PRE, lv)["free"]
         for v in C.NOVELTY_VARIANTS:

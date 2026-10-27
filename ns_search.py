@@ -2,9 +2,9 @@
 
 * **Fitness:** −Abstand der Endposition zum Ziel (Bezug, identisch zu Stück 1).
 * **Novelty** (Lehman und Stanley 2008, 2011): mittlerer Abstand der Endposition zu den `k` nächsten Endpositionen in der Referenzmenge aus Population und Archiv. Das Ziel kommt in der Auswahl nicht vor.
-  Das Ziel dient nur dazu, den Lauf zu beenden und zu messen (Erfolg: eine Endposition höchstens 2 Zellen vom Ziel).
-* **Archiv-Regeln:** `novelty` ohne Archiv (Referenz nur die Population); `archive_top`: je Generation kommen die neuartigsten 5 % der Population ins Archiv; `archive_threshold`: alle Individuen mit Novelty über der Schwelle ρ kommen
-  ins Archiv (höchstens 5 je Generation, die neuartigsten; bei Andrang ρ × 1.1, nach 3 Generationen ohne Neuzugang ρ × 0.9).
+  Das Ziel dient nur dazu, den Lauf zu beenden und zu messen (Erfolg: eine Endposition weniger als 2 Zellen vom Ziel).
+* **Archiv-Regeln:** `novelty` ohne Archiv (Referenz nur die Population); `archive_top`: je Generation kommen die neuartigsten 5 % der Population ins Archiv; `archive_threshold`: alle Individuen mit Novelty über der Schwelle τ kommen
+  ins Archiv (höchstens 5 je Generation, die neuartigsten; bei Andrang τ × 1.1, nach 3 Generationen ohne Neuzugang τ × 0.9).
 
 Zufall nur über `numpy.random.default_rng(seed)` (PCG64, plattformstabil)."""
 

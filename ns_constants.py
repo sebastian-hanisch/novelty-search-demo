@@ -15,7 +15,7 @@ def fmt_pct(x, digits=0):
 N = 24                                       # Kantenlänge des Labyrinths in Zellen (Rand ist Wand)
 START = (3.5, 3.5)                           # Mitte der Startzelle (3, 3)
 GOAL = (3.5, 20.5)                           # Mitte der Zielzelle (3, 20)
-SUCCESS_RADIUS = 2.0                         # Erfolg: Endposition höchstens so weit vom Ziel
+SUCCESS_RADIUS = 2.0                         # Erfolg: Endposition weniger weit als so viel vom Ziel
 START_HEADING = 0.7853981633974483           # Anfangsrichtung π/4
 STEPS = 140                                  # Länge der Steuerfolge
 TURN_MAX = 0.6                               # Drehung je Schritt (rad), Gen ∈ [−1, 1]
@@ -38,7 +38,7 @@ VARIANT_LABELS = {"fitness": "Fitness (Abstand zum Ziel)", "novelty": "Novelty, 
                   "archive_threshold": "Novelty, Archiv mit Schwelle"}
 NOVELTY_VARIANTS = ("novelty", "archive_top", "archive_threshold")   # im Live-Lauf wählbar; die Fitness läuft immer daneben
 ARCHIVE_TOP_SHARE = 0.05                     # Archiv der Neuartigsten: Anteil der Population je Generation (5 von 100)
-THRESHOLD_START = 1.0                        # Schwelle ρ: Novelty (Zellen), ab der ein Individuum ins Archiv kommt
+THRESHOLD_START = 1.0                        # Schwelle τ: Novelty (Zellen), ab der ein Individuum ins Archiv kommt
 THRESHOLD_MAX_ADDED = 5                      # mehr als so viele Kandidaten je Generation: Schwelle × 1.1, es kommen nur die neuartigsten 5 ins Archiv
 THRESHOLD_UP, THRESHOLD_DOWN = 1.1, 0.9      # Schwelle steigt bei Andrang und fällt nach 3 Generationen ohne Neuzugang
 THRESHOLD_QUIET = 3

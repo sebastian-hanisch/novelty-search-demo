@@ -46,6 +46,21 @@ endet, sondern wer **anders endet als alle anderen**. Das Ziel kommt in der Ausw
 zeigt, **wann das gelingt, was ein Archiv der bisherigen Verhalten dazu beiträgt** (in diesem Labyrinth: nichts) und **wo Novelty Search scheitert** (Stufe 4).
 """
 )
+
+# erklaerseite:einfach:start (erzeugt von tools/set_demo_explainer.py (Website-Repo) aus tools/content/explainers/novelty-search-erklaert.json, nicht von Hand ändern)
+with st.expander("💬 In einfachen Worten"):
+    st.markdown(
+        """
+Ein Roboter soll in einem Hof vom Start zum Ziel fahren. Dazwischen steht eine Mauer, die nur eine Öffnung hat. Die gewöhnliche Auswahl belohnt Fahrten, die am Ende nah am Ziel stehen, und sammelt die Fahrten deshalb vor der Mauer.
+
+**Novelty Search** dreht die Frage um: Ausgewählt wird, wer an einem Ort endet, an dem die anderen nicht enden. Das Ziel kommt in der Auswahl nicht mehr vor und dient nur noch der Messung. So verteilen sich die Fahrten über den Hof, bis eine durch die Öffnung kommt.
+
+Die Demo zeigt, wann das gelingt, was ein Archiv der bisherigen Endpositionen beiträgt (in diesem Labyrinth nichts) und wo das Verfahren scheitert: in der Schlangenlinie aus mehreren Mauern, auch mit dem Zehnfachen des Budgets. Wo die Nähe zum Ziel nicht täuscht, ist Novelty nicht schneller.
+
+[Ausführlich und verständlich erklärt, mit Fachteil](https://sebastianhanisch.net/novelty-search-erklaert.html)
+        """
+    )
+# erklaerseite:einfach:end
 st.caption(
     "Stück 2 der Linie „Novelty Search und Quality-Diversity“; Labyrinth, Roboter und Genetischer Algorithmus wie in [Stück 1](https://sebastianhanisch-deception-maze-demo.streamlit.app/). "
     "Das Verhalten ist hier von Hand gewählt (die Endposition); das nächste Stück fragt, was passiert, wenn man es anders wählt."
@@ -57,9 +72,9 @@ with st.expander("So funktioniert die Novelty-Auswahl", expanded=True):
 - **Verhalten:** die Endposition der Fahrt (zwei Zahlen). Zwei Individuen sind „verschieden“, wenn ihre Endpositionen weit auseinanderliegen, egal wie ähnlich die Steuerfolgen sind.
 - **Novelty** eines Individuums: der **mittlere Abstand zu den k nächsten** Endpositionen in der Vergleichsmenge (Population, bei den Archiv-Varianten zusätzlich das Archiv). Wer in einer dicht besetzten Gegend endet, hat wenig Novelty; wer allein in
   einer leeren Ecke endet, viel. Ausgewählt wird nach Novelty (Turnier, Elite, Mutation wie bei der Fitness).
-- **Archiv-Regeln:** *nur Population*: kein Gedächtnis, nur die aktuelle Generation. *Archiv der Neuartigsten*: je Generation kommen die neuartigsten 5 % ins Archiv. *Archiv mit Schwelle*: alle über der Schwelle ρ (höchstens 5 je Generation); ρ
+- **Archiv-Regeln:** *nur Population*: kein Gedächtnis, nur die aktuelle Generation. *Archiv der Neuartigsten*: je Generation kommen die neuartigsten 5 % ins Archiv. *Archiv mit Schwelle*: alle über der Schwelle τ (höchstens 5 je Generation); τ
   steigt bei Andrang und fällt, wenn 3 Generationen lang keiner die Schwelle erreicht.
-- **Das Ziel** dient nur der Messung: **Erfolg**, sobald eine Endposition höchstens 2 Zellen vom Ziel liegt. Der **wahre Restweg** ist der kürzeste Weg in Zellen von der besten bisher besuchten Zelle zum Ziel (Breitensuche).
+- **Das Ziel** dient nur der Messung: **Erfolg**, sobald eine Endposition weniger als 2 Zellen vom Ziel liegt. Der **wahre Restweg** ist der kürzeste Weg in Zellen von der besten bisher besuchten Zelle zum Ziel (Breitensuche).
         """
     )
 
@@ -151,7 +166,7 @@ else:
 st.markdown("---")
 st.subheader("🔬 Wie oft gelingt es? Die Studie über 20 Läufe")
 st.markdown(
-    f"Je Stufe und Variante {N} Läufe mit unterschiedlichem Seed, jeweils bis zu {C.fmt_int(PRE['budget'])} Evaluationen ({C.STUDY_GENS} Generationen). **Erfolg** heißt: irgendein Individuum endet höchstens {C.SUCCESS_RADIUS:g} Zellen vom Ziel."
+    f"Je Stufe und Variante {N} Läufe mit unterschiedlichem Seed, jeweils bis zu {C.fmt_int(PRE['budget'])} Evaluationen ({C.STUDY_GENS} Generationen). **Erfolg** heißt: irgendein Individuum endet weniger als {C.SUCCESS_RADIUS:g} Zellen vom Ziel."
 )
 st.plotly_chart(build_success_chart(PRE), width="stretch", key="success_chart")
 study_level = st.select_slider("Stufe für Tabelle und Verläufe", options=list(C.LEVELS), value=C.DEFAULT_LEVEL, key="study_level_select", format_func=lambda v: C.LEVEL_LABELS[v])
@@ -241,6 +256,28 @@ st.caption(
 st.markdown("---")
 
 with st.expander("📐 Mathematische Formulierung"):
+    # erklaerseite:lesehilfe:start (erzeugt von tools/set_demo_explainer.py (Website-Repo) aus tools/content/explainers/novelty-search-erklaert.json, nicht von Hand ändern)
+    st.markdown(
+        r"""
+**Lesehilfe.** Gegeben sind ein Roboter mit fester Steuerfolge, ein Labyrinth und eine Gruppe von Steuerfolgen, die ein Genetischer Algorithmus verändert. Gesucht ist, welche Steuerfolgen er behält, wenn er nach der Neuartigkeit der Endposition statt nach der Nähe zum Ziel auswählt.
+
+| Symbol | Bedeutung |
+|---|---|
+| $g$ | Steuerfolge (Folge von Lenk- und Gasbefehlen) eines Individuums |
+| $b(g)$ | Verhalten: Endposition der Fahrt mit der Steuerfolge $g$, ein Punkt in der Ebene |
+| $z$ | Ziel (Position) |
+| $f(g)$ | Fitness: negativer Abstand der Endposition zum Ziel |
+| $P$, $A$, $R$ | Population, Archiv und Vergleichsmenge $R = P \cup A$ |
+| $k$ | Zahl der nächsten Nachbarn, über die die Novelty gemittelt wird |
+| $N_k(i)$ | die $k$ Elemente der Vergleichsmenge ohne $i$ mit dem kleinsten Abstand zu $i$ |
+| $\rho_k(i)$ | Novelty des Individuums $i$: mittlerer Abstand seiner Endposition zu denen der $k$ nächsten Nachbarn |
+| $\tau$ | Schwelle des Archivs mit Schwelle (steigt bei Andrang, fällt bei Ruhe) |
+| $d(c)$ | Länge des kürzesten Wegs in Zellen von der Zelle $c$ zum Ziel (Breitensuche) |
+
+[Schritt für Schritt erklärt, mit Herleitung und Literatur](https://sebastianhanisch.net/novelty-search-erklaert.html#fachleute)
+        """
+    )
+    # erklaerseite:lesehilfe:end
     st.markdown(
         r"""
 **Verhalten.** $b(g)\in\mathbb{R}^2$ ist die Endposition der Fahrt mit der Steuerfolge $g$ (Kinematik wie in Stück 1).
